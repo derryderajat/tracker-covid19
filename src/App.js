@@ -11,8 +11,8 @@ import InfoBox from "./InfoBox";
 import Map from "./Map";
 import Table from "./Table";
 import { sortData, prettyPrintStat } from "./utils";
-
 import LineGraph from "./LineGraph";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   const [countries, setCountries] = useState([]);
@@ -71,73 +71,78 @@ function App() {
   };
 
   return (
-    <div className="app">
-      {/* Header */}
-      <div className="app__left">
-        <div className="app__header">
-          <h1>COVID-19 TRACKER</h1>
+    <BrowserRouter>
+      <div className="app">
+        {/* Header */}
+        <div className="app__left">
+          <div className="app__header">
+            <h1>COVID-19 TRACKER</h1>
 
-          <FormControl className="app__dropdown">
-            <Select
-              variant="outlined"
-              onChange={onCountryChange}
-              value={country}
-            >
-              {/* Looping all the countries */}
+            <FormControl className="app__dropdown">
+              <Select
+                variant="outlined"
+                onChange={onCountryChange}
+                value={country}
+              >
+                {/* Looping all the countries */}
 
-              <MenuItem value="worldwide">Worldwide</MenuItem>
-              {countries.map((country) => (
-                <MenuItem value={country.value}>{country.name}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </div>
+                <MenuItem value="worldwide">Worldwide</MenuItem>
+                {countries.map((country) => (
+                  <MenuItem value={country.value}>{country.name}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
 
-        {/* Title */}
-        <div className="app__stats">
-          {console.log(countryInfo)}
-          <InfoBox
-            onClick={(e) => setCasesType("cases")}
-            active={casesType === "cases"}
-            title="Coronavirus Cases"
-            total={prettyPrintStat(countryInfo.cases)}
-            cases={prettyPrintStat(countryInfo.todayCases)}
-          />
-          <InfoBox
+          {/* Title */}
+          <div className="app__stats">
+            {console.log(countryInfo)}
+            <InfoBox
+              onClick={(e) => setCasesType("cases")}
+              active={casesType === "cases"}
+              title="Coronavirus Cases"
+              total={prettyPrintStat(countryInfo.cases)}
+              cases={prettyPrintStat(countryInfo.todayCases)}
+            />
+            <InfoBox
+              casesType={casesType}
+              onClick={(e) => setCasesType("recovered")}
+              active={casesType === "recovered"}
+              title="Recovered"
+              total={prettyPrintStat(countryInfo.recovered)}
+              cases={prettyPrintStat(countryInfo.todayRecovered)}
+            />
+            <InfoBox
+              onClick={(e) => setCasesType("deaths")}
+              active={casesType === "deaths"}
+              title="Deaths"
+              total={prettyPrintStat(countryInfo.deaths)}
+              cases={prettyPrintStat(countryInfo.todayDeaths)}
+            />
+          </div>
+
+          {/* Map */}
+          <Map
             casesType={casesType}
-            onClick={(e) => setCasesType("recovered")}
-            active={casesType === "recovered"}
-            title="Recovered"
-            total={prettyPrintStat(countryInfo.recovered)}
-            cases={prettyPrintStat(countryInfo.todayRecovered)}
-          />
-          <InfoBox
-            onClick={(e) => setCasesType("deaths")}
-            active={casesType === "deaths"}
-            title="Deaths"
-            total={prettyPrintStat(countryInfo.deaths)}
-            cases={prettyPrintStat(countryInfo.todayDeaths)}
+            countries={mapCountries}
+            center={mapCenter}
+            zoom={mapZoom}
           />
         </div>
 
-        {/* Map */}
-        <Map
-          casesType={casesType}
-          countries={mapCountries}
-          center={mapCenter}
-          zoom={mapZoom}
-        />
+        <Card className="app__right">
+          <CardContent>
+            <h3>Live Cases by Country</h3>
+            <Table countries={tableData} />
+            <h3>Worldwide new cases</h3>
+            <LineGraph casesType="cases" />
+          </CardContent>
+        </Card>
       </div>
-
-      <Card className="app__right">
-        <CardContent>
-          <h3>Live Cases by Country</h3>
-          <Table countries={tableData} />
-          <h3>Worldwide new cases</h3>
-          <LineGraph casesType="cases" />
-        </CardContent>
-      </Card>
-    </div>
+      <Routes>
+        <Route path="/" element={<App />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
